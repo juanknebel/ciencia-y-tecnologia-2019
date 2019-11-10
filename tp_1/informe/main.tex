@@ -1,0 +1,207 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\documentclass{icisfinal}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{ {imagenes/} }
+\title{Music Information Retrieval: Similitud de géneros musicales}
+\researchtype{Clustering}
+\shorttitle{MIR: Géneros musicales}
+\track{Clustering música}
+
+\usepackage[hidelinks]{hyperref}
+\addbibresource{references.bib}
+
+\usepackage{tabularx}  % To have the table fill out the page
+\usepackage{multirow}
+\usepackage{setspace} % To doublespacing
+\usepackage{caption}
+\usepackage{float}
+
+\captionsetup{width=0.8\linewidth}
+
+\begin{document}
+\author{Daniel Caicedo, Ignacio Chiapella, Miguel Guerrero, Juan Knebel}
+\maketitle
+
+\begin{table}[h!]
+  \centering
+  \LARGE
+  \begin{tabularx}{\textwidth}{@{}*2{>{\centering\arraybackslash}X}@{}}
+    \textbf{Daniel Caicedo}        & \textbf{Ignacio Chiapella} \\
+    UAH & FCEyN   \\
+    djcc710@gmail.com & ignacio.chiapella@gmail.com \\
+    \\
+    \textbf{Miguel Guerrero}        & \textbf{Juan Knebel} \\
+    CUFM & FCEyN   \\
+    miguelgh72@gmail.com & juanknebel@gmail.com \\
+    \\
+  \end{tabularx}
+\end{table}
+
+\begin{abstract}
+  Escribir resumen del articulo
+
+  \emph{\textbf{Keywords:} Cluster, DataMining, Música, KMeans, KMedoids, DBSCAN, Hierarchical, Silhouette, PCA, Distancias, MIR}
+\end{abstract}
+
+\section{Introducción}
+\textit{La recuperación de información musical}, \textbf{Music Information Retrieval} en inglés o simplemente \textbf{MIR} de ahora en adelante, es la ciencia interdisciplinaria encargada de recuperar información de la música. Decimos que es interdisciplinaria ya que principalmente los especiales en musicología, en procesamiento de señales o en aprendizaje automático son los que más implicados en el tema están.
+
+Actualmente \textbf{MIR} es un área de estudio nuevo pero en crecimiento y muchos de sus estudios y resultados están siendo utilizados en muchas aplicaciones comerciales desde sistemas de recomendación, búsqueda de contenido, interfaces de usuarios para navegar por grandes colecciones de música, detección de instrumentos, categorización automática y hasta generación de música.
+
+Si bien el estudio de la música y la importancia que tuvo y sigue teniendo a lo largo de la historia no tiene discusión, en los últimos años el estudio de la técnica cobro mayor notoriedad. Las causas de lo anteriormente mencionado son, (i) el avance tecnológico que posibilitó a todos tener acceso a prácticamente cualquier pista de audio gracias a aplicaciones como \textit{Napster}, \textit{Grooveshark} y recientemente \textit{Spotify}, (ii) el incremento del poder de computo para aplicar las técnicas de estudio de la música, solo por nombrar dos de ellas.
+
+En este trabajo se realizará un estudio sobre los atributos de más de 2000 canciones, los cuales fueron obtenidas de la interfaz que ofrece Spotify. En la primer sección se comentarán los atributos.
+
+El trabajo consistirá en aplicar diferentes técnicas de \textbf{Clustering} sobre los conjuntos de datos previamente mencionados. El objetivo será agrupar diferentes canciones según su similitud en términos del género musical al que pertenecen.
+
+Las técnicas que se utilizarán serán el clásico método \textit{KMeans}, seguido por el también clásico pero más robusto al ruido \textbf{PAM} o \textbf{KMedoids}, también utilizaremos una implemetanción jerárquica o \textbf{Hierarchical}. Por último mencionaremos una experiencia fallida con el método \textbf{DBSCAN}, anticipando que en principio y para este conjunto de datos las pistas de audio no tienen un agrupamiento por densidad.
+
+\section{Trabajo previo}
+Antes de comenzar con el trabajo actual, es necesario describir el conjunto de datos con el cual se realizaron las experimentaciones. El primer archivo llamado "audio\_features" contiene los atributos llamados de alto nivel de los cuales solo tuvimos en cuenta los siguientes: acousticness, danceability, energy, instrumentalness, liveness, loudness, speechiness, tempo y valence. El resto fueron dejados lado ya que no aportaban ningún valor para el agrupamiento de las canciones. Por ejemplo: analysis\_url, track\_href, type y uri fueron inmediatamente descartadas ya que es información vinculada a la extracción de datos. El resto: duration\_ms, key, mode y time\_signature no ayudan en nada a discriminar grupos de canciones, como puede verse en el siguiente gráfico.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 4in]{img/scatter-af-complete.png}
+    \caption{Scatter plot de los atributos de alto nivel.}
+    \label{fig:scatter-af}
+\end{figure}
+
+El segundo conjunto de archivos llamados "audio\_analysis" contienen 12 atributos de bajo nivel, uno para cada una de las notas musicales. Se cuenta con un archivo por pista tanto para el timbre como para el pitch separados en ventanas de tiempo. Para no trabajar con series de tiempo y porque las pistas tiene duraciones distintas, se resumieron estos atributos en 2 medidas distintas tanto para los pitches como para los timbres. Las medidas elegidas fueron: para cada atributo de cada canción se calculo la media total y el desvío estándar. Entonces por cada uno de los temas musicales obtuvimos 2 valores resúmenes para cada uno de los 12 atributos. Para el trabajo posterior no se descartó ningún atributo ya que todos son importantes para el agrupamiento.
+
+\begin{figure}[H]
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width = 2in]{img/scatter-aa-pitches-avg.png}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width = 2in]{img/scatter-aa-pitches-std.png}
+    \end{subfigure}
+    \caption{Scatter plot de los atributos sobre el pitch.}
+    \label{fig:scatter-aa-pitches}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width = 2in]{img/scatter-aa-timbres-avg.png}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width = 2in]{img/scatter-aa-timbres-std.png}
+    \end{subfigure}
+    \caption{Scatter plot de los atributos sobre el timbre.}
+    \label{fig:scatter-aa-timbres}
+\end{figure}
+
+Todas las canciones de este conjunto de datos pertenecen a solo 5 géneros musicales: ambient, classical, drum and bass, jazz y world music.
+
+\newpage
+\section{Experiencia KMeans}
+\input{section-kmeans.tex}
+
+\newpage
+\section{Experiencia Jerarquico}
+\input{section-jerarquico.tex}
+
+\newpage
+\section{Experiencia algoritmo PAM}
+Se utilizó el algoritmo \textbf{KMedoids} de la librería sklearn extra.cluster y con la métrica de distancia euclidean.
+\subsection{Métodos}
+Con el dataset de audio features ejecutamos el algoritmo para distintos k midiendo en cada uno de ellos el promedio del coeficiente de Silhouette para así determinar el k óptimo a utilizar en el análisis.
+
+Los k utilizados fueron [2, 3, 4, 5, 6, 8, 10] y resultados obtenidos los siguientes:
+
+\includegraphics[width=\textwidth]{img/imagenes/2PAM_silohuete_k}
+\begin{center} Gráfico valores de silhouette \end{center}
+
+\includegraphics[width=\textwidth]{img/imagenes/1PAM_silohuete}
+\begin{center}Coeficiente de Silhouette para varias ejecuciones.\end{center}
+
+Con el coeficiente de Silhouette decidimos continuar con el k=3 debido a que presentaba un coeficiente cercano al n=2 y así podríamos observar más cantidad de agrupaciones, de igual manera se realizó gráfico para k=2 y k=3 para dejar evidencia de los parecido de los algoritmos con ambos k.
+
+\includegraphics[width=\textwidth]{img/imagenes/3PAM_silohuete_k2}
+
+\includegraphics[width=\textwidth]{img/imagenes/4PAM_silohuete_k3}
+
+
+Importante acotar que para las ejecuciones se utilizaron las variables con sus escalas originales, no se aplica normalización ni estandarización.
+
+Con k=3 logramos un coeficiente de 0.5689 lo cual es un número bastante aceptable a nivel general.  Para conocer el nivel de concentración de cada cluster obtenemos el cálculo agrupado.
+
+\includegraphics[width=7cm, height=6cm]{img/imagenes/6silohu_group}
+
+Silhouette por cluster.
+
+Se observa que el cluster "0" posee un coeficiente más alto que el resto con lo cual la observaciones pertenecientes a se encuentran mejor agrupadas. Para ver que tan bien clasificó nuestro clustering con respecto a los géneros de música que se tenían en el dataset realizamos una crosstable.
+
+\includegraphics[width=7cm, height=6cm]{img/imagenes/5crosstab_PAM}
+
+Se valida que el género mejor agrupado es \textbf{drum-and-bass} el cual presenta gran concentración en el cluster 0. Esta buena agrupación para este género coincide con los resultados observados en el análisis realizado con el método de clustering K-Means.
+
+Utilizamos los índices de RAND y VanDongen para evaluar si los agrupamientos son similares para los distintos conjuntos de datos.
+
+Con el algoritmo de KMedoids y la configuración antes indicada se obtuvieron los siguientes valores.
+
+Índice Rand para Algoritmo PAM con 3 clusters: 0.1240
+
+Índice VanDongen para Algoritmo PAM con 3 clusters: 0.7405
+
+Con el índice de VanDongen se observa un alto grado de pureza con los clusters analizados.
+
+Para el índice RAND podemos comentar que el porcentaje de decisiones correctas del cluster es de 12\% sin embargo es de esperable tener un porcentaje bajo ya que se están realizando agrupaciones de 3 clusters a diferencia de las 5 etiquetas de género en los datos.
+
+A continuación se realizó Análisis de Componentes con la finalidad de reducir la dimensionalidad de nuestro dataset para poder realizar una representación gráfica de nuestros clusters.
+
+\includegraphics[width=10cm, height=10cm]{img/imagenes/7PAM_pcaV2}
+
+Con las componentes 1 y 2 se observa un buen conglomerado diferenciado en los cluster 2 y 0, sin embargo el cluster 1 se encuentra más distribuido a lo largo y ancho del gráfico. Podemos decir que el cluster "0" drum-and-bass se caracteriza en su mayoría por tener valores positivos en la primera componente (eje x) y negativos en la segunda componente (eje y), mientras que el cluster 2 presenta en su mayoría negativos en x y positivos cercanos a cero en la segunda componente.    
+
+También podemos ver una separación un poco más clara entre el cluster 0 y 1 que el cluster 2 con respecto al resto.
+
+\newpage
+\section{Experiencia Algoritmo DBSCAN}
+Como acercamiento y validación de otros métodos de clustering decidimos probar con el algoritmo DBSCAN el cual al estar basado en densidad permite agrupar de mejor manera datos que no posean una forma particular.
+
+Con una configuración de eps = 2 un min sample= 25 y métrica euclidean se obtuvieron 3 clusters los cuales presentaban una métrica de silhouette de 0.1564 y la siguiente crossTable:
+
+\includegraphics[width=7cm, height=6cm]{img/imagenes/8DBSCAN_ct.PNG}
+
+Vemos una muy buena clasificación para el género drum-and-bass en el cluster 1, sin embargo el resto de los géneros se encuentran muy distribuidos por el resto de los cluster lo cual puede ser el motivo de obtener un coeficiente de silhouette tan bajo.
+
+En el siguiente gráfico podemos observar las clasificación del algoritmo en baja dimensionalidad (Utilizamos PCA para reducir las dimensiones).
+
+\includegraphics[width=12cm, height=10cm]{img/imagenes/9DBSCAN_pca}
+
+Tal como se comentó anteriormente la clasificación del género drum-and-bass se encuentra concentrada en el cluster 1 y lo podemos observar en el gráfico de las componentes principales.
+
+Podemos comentar que las causas de la baja performance de este algoritmo se debe a que precisamente se trata de un método basado en densidad y según lo observado durante la elaboración del pre TP1 en la sección de scatter plot´s muchos de los features del dataset presentaban altas concentraciones y se mezclaban los distintos géneros musicales.
+
+\newpage
+\section{Clustering de secciones dentro de una pista}
+Para este análisis se seleccionó una pista de Timbres de los datos de Audio Analysis, específicamente la pista cuyo id es "00At7PWydsvg7g5xgaYan9", es una canción de genero Electro/Pop: All I Know - Matrix \& Futurebound ft. Luke Bingham.
+
+Se realizó una matriz de recurrencia con los datos normalizados y la serie temporal de la pista interpolada obteniendo los siguientes resultados:
+
+\includegraphics[width=12cm, height=10cm]{img/imagenes/10_matriz_recurrencia}
+
+Lo primero que se puede destacar es en los primeros segundos de la canción, se ve claramente una intro que es bastante distinta al resto, seguida de un par de secciones parecidas entre sí (estribillos y coros). Se puede observar también en el segundo 125 un segmento de la canción con características similares al intro.
+
+Para validar los resultados del análisis se escuchó la pista validando que la intro se caracteriza por un sonido más instrumental/electrónico, sin vocalización, similar al del segundo 125. El resto de la canción tiene vocalizaciones con tonos muy uniformes. 
+
+Así mismo, para corroborar este análisis se utilizó el algoritmo de clustering de KMeans para identificar distintos grupos dentro de la pista, obteniéndose los siguientes resultados medidos con la métrica de Silhouette:
+
+\includegraphics[width=12cm, height=10cm]{img/imagenes/11cantidad_clusters}
+
+Los resultados obtenidos indican una clara identificación de dos clusters, que según lo escuchado en la pista y lo visto en la matriz de recurrencia serían las secciones instrumentales/electrónicas y las secciones donde hay vocalización. Si bien la mejor distinción es la de k=2, con k=3 también se observa una leve mejora con respecto a los k > 3, esto puede ser a la diferenciación de la vocalización escuchada en los estribillos y el coro.
+
+\newpage
+\section{Conclusiones}
+\input{section-conclusiones.tex}
+
+\printbibliography
+
+\end{document}
+

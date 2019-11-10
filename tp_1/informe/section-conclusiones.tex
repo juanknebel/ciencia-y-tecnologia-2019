@@ -1,0 +1,18 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\begin{itemize} 
+
+\item El análisis de cluster permite no solo el agrupamiento de datos para su estudio, sino una manera simple de conocer como es la morfología de los datos, encontrar relaciones y ser un puntapié para empezar a conocer de que se trata un data set. Por medio de dinstintas técnicas de clustering en este trabajo pudimos probar y experimentar sobre como algunos conceptos que en principio parecen simples, como ser en cuantos cluster queremos que cierto algoritmo separe nuestros datos, se vuelven muy complejos al momento de comenzar la exploración ya que uno fácilmente se puede verse tentado a ultiliar algún dato del dominio. En este trabajo, los géneros parecían una partición natural y en cierto modo fue nuestra primer opción, luego cuando íbamos iterando por las distintas técnicas y cálculos nos fuimos dando cuenta que grupos de datos que por su etiqueta parecían dar origen a un agrupamiento en particular no eran mas que partes de un agrupamiento mas general. 
+
+\item Es fundamental contar con técnicas no solo numéricas sino gráficas para el análisis de los distintos coeficientes y resultados, en muchos casos puede haber pequeñas diferencias numéricas pero que llevadas a gráficos hacen que su diferencia hagan tomar una decisión u otra. En este trabajo, la manera de graficar los coeficientes de Silhouette nos fue de gran utilidad para elegir entre uno u otro K para partir nuestro conjunto de datos. 
+
+\item El análisis por PCA nos permitió poder graficar los clusters y así poder entender como se estaban agrupando los datos en ciertos clusters y como se formaban regiones densas y regiones mas claras, también aprovechamos para ver como algunas zonas contaban con datos de mas de un cluster y otras zonas tenían datos exclusivos. De alguna forma nos sirvió para bajar a tierra los números o los datos duros de las tablas, permitiéndonos en una mirada rápida tener una idea de como estaban formados los clusters, que densidades tenían y que tan desparramados estaban sus datos. 
+
+\item La manera de calcular la distancia entre los puntos o conjuntos de puntos de los cluster resulta fundamental para poder realizar un clustering adecuado, como vimos en Jerárquicos la diferencia entre la separación que formaba Ward y Simple era muy evidente. En un primer momento, pensamos que la distancia promedio seria la mejor, ya que como no teníamos conocimiento previo del dominio o de que forma se podrían formar estos clusters nos aventuramos al pensar que el promedio era quien mejor podría representarlos. Nuestra sorpresa vino al conocer que solo Ward era la métrica que nos estaba arrojando una resultado que nos convencía. 
+
+\item En los tres métodos donde pudimos estudiar la configuración de los clusters, vimos que el genero drum-and-bas fue quien se acumulo mayoritariamente en uncluster diferenciándose del resto de los géneros. 
+
+\item Como en todos los casos donde se tenga que trabajar con datos de un cierto dominio, siempre contar con información del mismo es una ventaja, ya que permite pensar pre conceptos que luego uno puede desafiar con los datos duros y poder re preguntarse mas de una vez si un resultado es el correcto. Ponemos nuevamente el ejemplo de los géneros, donde mas de una vez forzamos los cálculos para volver a comprobar si una separación en géneros no era la correcta o la esperada.
+
+ \end{itemize}
