@@ -1,0 +1,72 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\documentclass{icisfinal}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{ {imagenes/} }
+\title{Redes en el Cerebro}
+\researchtype{Redes}
+\shorttitle{Redes en el Cerebro}
+\track{Redes en el Cerebro}
+
+\usepackage[hidelinks]{hyperref}
+\addbibresource{references.bib}
+
+\usepackage{tabularx}  % To have the table fill out the page
+\usepackage{multirow}
+\usepackage{setspace} % To doublespacing
+\usepackage{caption}
+\usepackage{float}
+
+\captionsetup{width=0.8\linewidth}
+
+\begin{document}
+\author{Daniel Caicedo, Ignacio Chiapella, Miguel Guerrero, Juan Knebel}
+\maketitle
+
+\begin{table}[h!]
+  \centering
+  \LARGE
+  \begin{tabularx}{\textwidth}{@{}*2{>{\centering\arraybackslash}X}@{}}
+    \textbf{Daniel Caicedo}        & \textbf{Ignacio Chiapella} \\
+    UAH & FCEyN   \\
+    djcc710@gmail.com & ignacio.chiapella@gmail.com \\
+    \\
+    \textbf{Miguel Guerrero}        & \textbf{Juan Knebel} \\
+    CUFM & FCEyN   \\
+    miguelgh72@gmail.com & juanknebel@gmail.com \\
+    \\
+  \end{tabularx}
+\end{table}
+
+\begin{abstract}
+%  Escribir resumen del articulo
+
+  \emph{\textbf{Keywords: Redes, Grafos, Pesos, Louvain, Densidad, Sueño, Cerebro} }
+\end{abstract}
+
+\section{Introducción}
+\input{section-introduccion.tex}
+
+\newpage
+\section{Tarea 1: Visualización}
+\input{section-visualizacion.tex}
+
+\newpage
+\section{Tarea 2: Comunidades y coeficiente de modularidad}
+\input{section-coef-modularidad.tex}
+
+\newpage
+\section{Tarea 3: Estadística + Opcional 2 (Tarea 3)}
+\input{section-estadistica.tex}
+
+\section{Tarea 4: Diferencias en la membresía para los diferentes estadíos}
+\input{section-membresia-estadios.tex}
+
+\section{Opcional 5: Rol de nodos, y cambios en el rol de los nodos}
+\input{section-nodos.tex}
+
+\printbibliography
+
+\end{document}
+
